@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BuffUIManager : MonoBehaviour
+public class BuffUI : MonoBehaviour
 {
     // Start is called before the first frame update
     void Start()
@@ -10,6 +10,7 @@ public class BuffUIManager : MonoBehaviour
         
     }
 
+    // Update is called once per frame
     void Update()
     {
         
