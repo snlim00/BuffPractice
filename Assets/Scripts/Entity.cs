@@ -119,6 +119,8 @@ public class Entity : MonoBehaviour
 
         else if (buff.stackType == StackType.Add)
             AbleBuff(buff);
+
+        BuffUIManager.S.InstantiateBuffUI(buff.duration, 0);
     }
 
     private void RemoveBuff(Buff buff)
