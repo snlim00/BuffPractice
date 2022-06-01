@@ -10,6 +10,9 @@ public class BuffUI : MonoBehaviour
     public Image progress;
     public TMP_Text stack;
 
+    private bool isProgress = false;
+    private Coroutine corProgress = null;
+
     private void Awake()
     {
         icon = GetComponent<Image>();
@@ -19,11 +22,22 @@ public class BuffUI : MonoBehaviour
 
     public void PlayProgress(float duration, int stack)
     {
-        StartCoroutine(Progress(duration, stack));
+        corProgress = StartCoroutine(Progress(duration, stack));
+    }
+
+    public void StopProgress()
+    {
+        if(isProgress == true)
+        {
+            isProgress = false;
+            StopCoroutine(corProgress);
+        }
     }
 
     private IEnumerator Progress(float duration, int stack)
     {
+        isProgress = true;
+
         this.stack.text = stack.ToString();
 
         float t = 0;
@@ -41,5 +55,6 @@ public class BuffUI : MonoBehaviour
         BuffUIManager.S.SetBuffUIPosition();
         Destroy(this.gameObject);
 
+        isProgress = false;
     }
 }

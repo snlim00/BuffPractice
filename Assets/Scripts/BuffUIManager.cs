@@ -10,7 +10,7 @@ public class BuffUIManager : MonoBehaviour
 
     private List<BuffUI> buffUIList = new List<BuffUI>();
 
-    private float positionOffset = 50;
+    private float positionOffset = 100;
 
     private void Awake()
     {
@@ -28,7 +28,7 @@ public class BuffUIManager : MonoBehaviour
         
     }
 
-    public void InstantiateBuffUI(float duration, int stack)
+    public BuffUI InstantiateBuffUI(Buff buff, int stack)
     {
         BuffUI buffUI = Instantiate(buffUIPref).GetComponent<BuffUI>();
 
@@ -36,11 +36,15 @@ public class BuffUIManager : MonoBehaviour
 
         buffUI.transform.localScale = Vector2.one;
 
-        buffUI.PlayProgress(duration, stack);
+        buffUI.PlayProgress(buff.duration, stack);
 
         buffUIList.Add(buffUI);
 
         SetBuffUIPosition();
+
+        buff.buffUI = buffUI;
+
+        return buffUI;
     }
 
     public void SetBuffUIPosition()
