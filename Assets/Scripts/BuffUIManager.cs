@@ -8,7 +8,7 @@ public class BuffUIManager : MonoBehaviour
 
     [SerializeField] private GameObject buffUIPref;
 
-    private List<BuffUI> buffUIList = new List<BuffUI>();
+    public List<BuffUI> buffUIList = new List<BuffUI>();
 
     private float positionOffset = 100;
 

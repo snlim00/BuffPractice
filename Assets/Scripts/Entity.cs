@@ -245,13 +245,19 @@ public class Entity : MonoBehaviour
 
             if(haveBuffUIIndex != -1 && haveBuffUIIndex != mostPowerIndex && sameBuffList[mostPowerIndex].buffUI == null)
             {
-                sameBuffList[mostPowerIndex].buffUI = sameBuffList[haveBuffUIIndex].buffUI;
+                //sameBuffList[mostPowerIndex].buffUI = sameBuffList[haveBuffUIIndex].buffUI;
+                sameBuffList[mostPowerIndex].buffUI = BuffUIManager.S.InstantiateBuffUI(sameBuffList[mostPowerIndex], sameBuffList.Count);
 
-                sameBuffList[mostPowerIndex].buffUI.StopProgress();
-                sameBuffList[mostPowerIndex].buffUI.PlayProgress(sameBuffList[mostPowerIndex].duration, sameBuffList.Count);
-
+                BuffUIManager.S.buffUIList.Remove(sameBuffList[haveBuffUIIndex].buffUI);
+                sameBuffList[haveBuffUIIndex].buffUI.StopProgress();
+                Destroy(sameBuffList[haveBuffUIIndex].buffUI.gameObject);
                 sameBuffList[haveBuffUIIndex].buffUI = null;
-                Debug.Log(sameBuffList[mostPowerIndex].buffUI);
+
+                //sameBuffList[mostPowerIndex].buffUI.StopProgress();
+                //sameBuffList[mostPowerIndex].buffUI.PlayProgress(sameBuffList[mostPowerIndex].duration, sameBuffList.Count);
+
+                //sameBuffList[haveBuffUIIndex].buffUI = null;
+                //Debug.Log(sameBuffList[mostPowerIndex].buffUI);
             }
             else
             {
@@ -265,6 +271,7 @@ public class Entity : MonoBehaviour
     {
         int haveBuffUIIndex = -1;
 
+        Debug.Log(buffList.Count);
         for (int i = 0; i < buffList.Count; ++i)
         {
             if (buffList[i].buffUI != null)
