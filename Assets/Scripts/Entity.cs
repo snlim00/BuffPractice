@@ -172,34 +172,45 @@ public class Entity : MonoBehaviour
     {
         List<Buff> sameBuffList = FindSameBuff(buff);
 
-        if(sameBuffList.Count == 1)
+        //if(buff.stackType == StackType.Cover)
         {
-            BuffUIManager.S.InstantiateBuffUI(sameBuffList[0], sameBuffList.Count);
-        }
-        else
-        {
-            int mostPowerIndex = FindMostPowerIndex(sameBuffList);
-            int haveBuffUIIndex = FindHaveBuffUIIndex(sameBuffList);
-
-            if(haveBuffUIIndex == -1)
+            if (sameBuffList.Count == 1)
             {
-                BuffUIManager.S.InstantiateBuffUI(sameBuffList[mostPowerIndex], sameBuffList.Count);
-            }
-            else if(mostPowerIndex == haveBuffUIIndex)
-            {
-                sameBuffList[mostPowerIndex].buffUI.StopProgress();
-                sameBuffList[mostPowerIndex].buffUI.PlayProgress(sameBuffList[mostPowerIndex], sameBuffList.Count);
+                BuffUIManager.S.InstantiateBuffUI(sameBuffList[0], sameBuffList.Count);
             }
             else
             {
-                sameBuffList[mostPowerIndex] = sameBuffList[haveBuffUIIndex];
-                sameBuffList[haveBuffUIIndex].haveBuffUI = false;
-                sameBuffList[mostPowerIndex].haveBuffUI = true;
+                int mostPowerIndex = FindMostPowerIndex(sameBuffList);
+                int haveBuffUIIndex = FindHaveBuffUIIndex(sameBuffList);
 
-                sameBuffList[mostPowerIndex].buffUI.StopProgress();
-                sameBuffList[mostPowerIndex].buffUI.PlayProgress(sameBuffList[mostPowerIndex], sameBuffList.Count);
+                if (haveBuffUIIndex == -1)
+                {
+                    BuffUIManager.S.InstantiateBuffUI(sameBuffList[mostPowerIndex], sameBuffList.Count);
+                    Debug.Log("A");
+                }
+                else if (sameBuffList[mostPowerIndex] == buff)
+                {
+                    Debug.Log("B");
+                }
+                else if (mostPowerIndex == haveBuffUIIndex)
+                {
+                    sameBuffList[mostPowerIndex].buffUI.StopProgress();
+                    sameBuffList[mostPowerIndex].buffUI.PlayProgress(sameBuffList[mostPowerIndex], sameBuffList.Count);
+                    Debug.Log("C");
+                }
+                else
+                {
+                    sameBuffList[mostPowerIndex] = sameBuffList[haveBuffUIIndex];
+                    sameBuffList[haveBuffUIIndex].haveBuffUI = false;
+                    sameBuffList[mostPowerIndex].haveBuffUI = true;
+
+                    sameBuffList[mostPowerIndex].buffUI.StopProgress();
+                    sameBuffList[mostPowerIndex].buffUI.PlayProgress(sameBuffList[mostPowerIndex], sameBuffList.Count);
+                    Debug.Log("D");
+                }
             }
         }
+        
     }
 
     private void SetStatus(Buff buff, bool isAble = true)
