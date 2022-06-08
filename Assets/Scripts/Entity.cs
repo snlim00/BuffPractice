@@ -15,7 +15,10 @@ public class Buff
 
     public bool isApplying = false;
 
+    public bool haveBuffUI = false;
     public BuffUI buffUI;
+
+    public float startTime;
 
     public Buff(string name, int status, float power, float duration, StackType stackType)
     {
@@ -82,20 +85,20 @@ public class Entity : MonoBehaviour
     public List<Buff> buffList = new List<Buff>();
 
     public float[] status = new float[STATUS.COUNT];
-    
+
     public float speed
-    { 
-        get 
-        { 
-            return (status[STATUS.DEFAULT_SPEED] + status[STATUS.EXTRA_SPEED]) * status[STATUS.SPEED_MULTIPLIER]; 
-        } 
+    {
+        get
+        {
+            return (status[STATUS.DEFAULT_SPEED] + status[STATUS.EXTRA_SPEED]) * status[STATUS.SPEED_MULTIPLIER];
+        }
     }
 
     public float damage;
 
     private void Start()
     {
-        
+
     }
 
     public void GivingBuff(Buff buff)
@@ -115,8 +118,9 @@ public class Entity : MonoBehaviour
     private void AddBuff(Buff buff)
     {
         buffList.Add(buff);
+        buff.startTime = Time.time;
 
-        if(buff.stackType == StackType.Cover)
+        if (buff.stackType == StackType.Cover)
             CoverStackProcess(buff);
 
         else if (buff.stackType == StackType.Add)
@@ -138,10 +142,10 @@ public class Entity : MonoBehaviour
             else if (buff.stackType == StackType.Add)
                 DisableBuff(buff);
 
-            //UIProcess(buff);
+            UIProcess(buff);
         }
     }
-    
+
     private void AbleBuff(Buff buff)
     {
         if (buff.isApplying == false)
@@ -155,12 +159,46 @@ public class Entity : MonoBehaviour
 
     private void DisableBuff(Buff buff)
     {
-        if(buff.isApplying == true)
+        if (buff.isApplying == true)
         {
             buff.isApplying = false;
             SetStatus(buff, false);
 
             //Debug.Log("DISABLE");
+        }
+    }
+
+    private void UIProcess(Buff buff)
+    {
+        List<Buff> sameBuffList = FindSameBuff(buff);
+
+        if(sameBuffList.Count == 1)
+        {
+            BuffUIManager.S.InstantiateBuffUI(sameBuffList[0], sameBuffList.Count);
+        }
+        else
+        {
+            int mostPowerIndex = FindMostPowerIndex(sameBuffList);
+            int haveBuffUIIndex = FindHaveBuffUIIndex(sameBuffList);
+
+            if(haveBuffUIIndex == -1)
+            {
+                BuffUIManager.S.InstantiateBuffUI(sameBuffList[mostPowerIndex], sameBuffList.Count);
+            }
+            else if(mostPowerIndex == haveBuffUIIndex)
+            {
+                sameBuffList[mostPowerIndex].buffUI.StopProgress();
+                sameBuffList[mostPowerIndex].buffUI.PlayProgress(sameBuffList[mostPowerIndex], sameBuffList.Count);
+            }
+            else
+            {
+                sameBuffList[mostPowerIndex] = sameBuffList[haveBuffUIIndex];
+                sameBuffList[haveBuffUIIndex].haveBuffUI = false;
+                sameBuffList[mostPowerIndex].haveBuffUI = true;
+
+                sameBuffList[mostPowerIndex].buffUI.StopProgress();
+                sameBuffList[mostPowerIndex].buffUI.PlayProgress(sameBuffList[mostPowerIndex], sameBuffList.Count);
+            }
         }
     }
 
@@ -192,7 +230,7 @@ public class Entity : MonoBehaviour
             //가장 높은 능력치의 버프만 활성화
             if (sameBuffList.Count > 0)
             {
-                int mostPowerIndex = FindMostPowerIndex(in sameBuffList);
+                int mostPowerIndex = FindMostPowerIndex(sameBuffList);
 
                 AbleBuff(sameBuffList[mostPowerIndex]);
             }
@@ -213,7 +251,7 @@ public class Entity : MonoBehaviour
         return sameBuffList;
     }
 
-    private int FindMostPowerIndex(in List<Buff> buffList)
+    private int FindMostPowerIndex(List<Buff> buffList)
     {
         int mostPowerIndex = 0;
         for (int i = 1; i < buffList.Count; ++i)
@@ -227,54 +265,13 @@ public class Entity : MonoBehaviour
         return mostPowerIndex;
     }
 
-    private void UIProcess(Buff buff)
-    {
-        List<Buff> sameBuffList = FindSameBuff(buff);
-
-        if(sameBuffList.Count <= 1)
-        {
-            BuffUIManager.S.InstantiateBuffUI(buff, sameBuffList.Count);
-            Debug.Log("A");
-        }
-        else
-        {
-            int mostPowerIndex = FindMostPowerIndex(sameBuffList);
-
-            int haveBuffUIIndex = FindHaveBuffUIIndex(sameBuffList);
-            Debug.Log(haveBuffUIIndex);
-
-            if(haveBuffUIIndex != -1 && haveBuffUIIndex != mostPowerIndex && sameBuffList[mostPowerIndex].buffUI == null)
-            {
-                //sameBuffList[mostPowerIndex].buffUI = sameBuffList[haveBuffUIIndex].buffUI;
-                sameBuffList[mostPowerIndex].buffUI = BuffUIManager.S.InstantiateBuffUI(sameBuffList[mostPowerIndex], sameBuffList.Count);
-
-                BuffUIManager.S.buffUIList.Remove(sameBuffList[haveBuffUIIndex].buffUI);
-                sameBuffList[haveBuffUIIndex].buffUI.StopProgress();
-                Destroy(sameBuffList[haveBuffUIIndex].buffUI.gameObject);
-                sameBuffList[haveBuffUIIndex].buffUI = null;
-
-                //sameBuffList[mostPowerIndex].buffUI.StopProgress();
-                //sameBuffList[mostPowerIndex].buffUI.PlayProgress(sameBuffList[mostPowerIndex].duration, sameBuffList.Count);
-
-                //sameBuffList[haveBuffUIIndex].buffUI = null;
-                //Debug.Log(sameBuffList[mostPowerIndex].buffUI);
-            }
-            else
-            {
-                BuffUIManager.S.InstantiateBuffUI(sameBuffList[mostPowerIndex], sameBuffList.Count);
-                Debug.Log("B");
-            }
-        }
-    }
-
     private int FindHaveBuffUIIndex(List<Buff> buffList)
     {
         int haveBuffUIIndex = -1;
 
-        Debug.Log(buffList.Count);
         for (int i = 0; i < buffList.Count; ++i)
         {
-            if (buffList[i].buffUI != null)
+            if (buffList[i].haveBuffUI == true)
             {
                 haveBuffUIIndex = i;
                 break;

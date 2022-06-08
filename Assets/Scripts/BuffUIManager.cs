@@ -36,13 +36,15 @@ public class BuffUIManager : MonoBehaviour
 
         buffUI.transform.localScale = Vector2.one;
 
-        buffUI.PlayProgress(buff.duration, stack);
+        buffUI.PlayProgress(buff, stack);
 
         buffUIList.Add(buffUI);
 
         SetBuffUIPosition();
 
         buff.buffUI = buffUI;
+
+        buff.haveBuffUI = true;
 
         return buffUI;
     }

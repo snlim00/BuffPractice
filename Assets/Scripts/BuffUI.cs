@@ -20,9 +20,9 @@ public class BuffUI : MonoBehaviour
         stack = transform.GetChild(1).GetComponent<TMP_Text>();
     }
 
-    public void PlayProgress(float duration, int stack)
+    public void PlayProgress(Buff buff, int stack)
     {
-        corProgress = StartCoroutine(Progress(duration, stack));
+        corProgress = StartCoroutine(Progress(buff.duration - (Time.time - buff.startTime), stack));
     }
 
     public void StopProgress()
