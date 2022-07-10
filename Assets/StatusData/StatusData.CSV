@@ -1,1 +1,4 @@
 STATUS_NAME	MIN_VALUE	MAX_VALUE
+defaultSpeed	0	9999
+extraSpeed	-9999	9999
+speedMultiplier	-1	1
