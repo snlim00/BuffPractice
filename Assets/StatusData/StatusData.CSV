@@ -1,4 +1,5 @@
-STATUS_NAME	MIN_VALUE	MAX_VALUE
-defaultSpeed	0	9999
-extraSpeed	-9999	9999
-speedMultiplier	-1	1
+StatusName,MinValue,MaxValue
+DefaultSpeed,0,9999
+ExtraSpeed,-9999,9999
+SpeedMultiplier,-1,1
+FinalSpeed,0,9999

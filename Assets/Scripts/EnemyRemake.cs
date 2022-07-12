@@ -3,56 +3,92 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public static class STATUS_DATA_KEY
-{
-    public const int STATUS_NAME = 0;
-    public const int MIN_VALUE = 1;
-    public const int MAX_VALUE = 2;
 
-    public const int COUNT = 3;
-}
-
-public class Status
+[Serializable]
+public class Stat
 {
+    public static class StatName
+    {
+        public const int DefaultSpeed = 0;
+        public const int ExtraSpeed = 1;
+        public const int SpeedMultiplier = 2;
+        public const int FinalSpeed = 3;
+
+        public const int Count = 4;
+    }
+
+    public static class StatDataKey
+    {
+        public const int StatusName = 0;
+        public const int MinValue = 1;
+        public const int MaxValue = 2;
+
+        public const int Count = 3;
+
+        public static string GetName(int value)
+        {
+            switch(value)
+            {
+                case StatusName:
+                    return nameof(StatName);
+
+                case MinValue:
+                    return nameof(MinValue);
+
+                case MaxValue:
+                    return nameof(MaxValue);
+
+                default:
+                    return value + "에 해당하는 값이 없습니다. (" + nameof(StatDataKey) + ".GetName)";
+            }
+        }
+    }
+
     public float value { get; private set; }
 
-    public static float[] statusData = new float[STATUS_DATA_KEY.COUNT];
+    [HideInInspector]
+    public static float[] statusData = new float[StatDataKey.Count];
 
-    private Status()
+    private Stat()
     {
 
     }
 
-    public Status(float minValue, float maxValue)
+    public Stat(float minValue, float maxValue)
     {
-        statusData[STATUS_DATA_KEY.MIN_VALUE] = minValue;
-        statusData[STATUS_DATA_KEY.MAX_VALUE] = maxValue;
+        statusData[StatDataKey.MinValue] = minValue;
+        statusData[StatDataKey.MaxValue] = maxValue;
     }
 
     public void SetStatus(float value)
     {
-        if (value > statusData[STATUS_DATA_KEY.MAX_VALUE])
+        if (value > statusData[StatDataKey.MaxValue])
         {
-            value = statusData[STATUS_DATA_KEY.MAX_VALUE];
+            value = statusData[StatDataKey.MaxValue];
         }
-        else if (value < statusData[STATUS_DATA_KEY.MIN_VALUE])
+        else if (value < statusData[StatDataKey.MinValue])
         {
-            value = statusData[STATUS_DATA_KEY.MIN_VALUE];
+            value = statusData[StatDataKey.MinValue];
         }
 
         this.value = value;
     }
 
-    public static Status[] statusSample;
-    public static void SetStatusSample()
+    public static Stat[] statusTemplate;
+    public static void SetStatusTemplate()
     {
-        List<Dictionary<string, object>> statusData = CSVReader.Read("StatusData", "StatusData");
+        List<Dictionary<string, object>> statusData = CSVReader.Read("StatusData", "StatusData.CSV");
 
-        statusSample = new Status[statusData.Count];
+        statusTemplate = new Stat[statusData.Count];
 
         for (int i = 0; i < statusData.Count; ++i)
         {
-            Status.statusData[i] = Convert.ToSingle(Convert.ToDouble(statusData[i]));
+            for(int j = 1; j < Stat.StatDataKey.Count; ++j)
+            {
+                Stat.statusData[i] = Convert.ToSingle(Convert.ToDouble(statusData[i][Stat.StatDataKey.GetName(j)]));
+                Debug.Log(Stat.StatDataKey.GetName(j));
+            }
+            //Stat.statusData[i] = statusData[i]
         }
     }
 }
@@ -71,14 +107,12 @@ public class Buff2
 
 public class EnemyRemake : MonoBehaviour
 {
-    public Status[] status;
+    public Stat[] status;
 
     void Awake()
     {
-        Status.SetStatusSample();
+        Stat.SetStatusTemplate();
 
-        status = Status.statusSample;
+        status = Stat.statusTemplate;
     }
-
-
 }
